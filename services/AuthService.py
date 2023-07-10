@@ -2,10 +2,11 @@ import time
 import jwt
 from decouple import config
 from models.UsuarioModel import UsuarioLoginModel
-from repositories.UsuarioRepository import buscar_usuario_por_email
+from repositories.UsuarioRepository import UsuarioRepository
 from utils.AuthUtil import verificar_senha
 
 JWT_SECRET_KEY = config('JWT_SECRET_KEY')
+usuarioRepository = UsuarioRepository()
 
 def gerar_token_jwt(usuario_id:str)-> str:
     payload = {
@@ -28,16 +29,11 @@ def decode_token_jwt(token:str):
             return None
 
     except Exception as erro:
-        print(erro)
-        return {
-            "mensagem": "Erro interno do servidor (Token)",
-            "dados": str(erro),
-            "Status": 500
-        }
-
+        print(f'Erro ao decodificar {erro}')
+        return None
 
 async def login_service(usuario : UsuarioLoginModel):
-    usuario_encontrado = await buscar_usuario_por_email(usuario.email)
+    usuario_encontrado = await usuarioRepository.buscar_usuario_por_email(usuario.email)
 
     if not usuario_encontrado:
         return {

@@ -6,7 +6,7 @@ router = APIRouter()
 
 
 @router.post('/login')
-async def login(usuario : UsuarioLoginModel = Body(...)):
+async def login(usuario: UsuarioLoginModel = Body(...)):
     resultado = await login_service(usuario)
 
     if not resultado['status'] == 200:
@@ -16,6 +16,6 @@ async def login(usuario : UsuarioLoginModel = Body(...)):
 
     token = gerar_token_jwt(resultado['dados']['id'])
 
-    resultado['token'] = token
+    resultado['dados']['token'] = token
 
     return resultado
