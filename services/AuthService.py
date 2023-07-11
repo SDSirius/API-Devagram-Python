@@ -11,7 +11,7 @@ usuarioRepository = UsuarioRepository()
 def gerar_token_jwt(usuario_id:str)-> str:
     payload = {
         "usuario_id": usuario_id,
-        "expires": time.time() + 600
+        "expires": time.time() + 1200
     }
 
     token = jwt.encode(payload, JWT_SECRET_KEY, algorithm="HS256")

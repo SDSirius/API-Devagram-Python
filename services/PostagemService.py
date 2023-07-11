@@ -1,15 +1,15 @@
 from datetime import datetime
 from models.UsuarioModel import UsuarioCriarModel, UsuarioAtualizarModel
 from providers.AWSProvider import AWSProvider
-from repositories.UsuarioRepository import UsuarioRepository
+from repositories.PostagemRepository import PostagemRepository
 
 awsProvider = AWSProvider()
-usuarioRepository = UsuarioRepository()
+postagemRepository = PostagemRepository()
 
-class UsuarioService:
-    async def registrar_usuario(self, usuario: UsuarioCriarModel, caminho_foto):
+class PostagemService:
+    async def fazer_postagem(self, postagem, usuario_id):
         try:
-            usuario_encontrado = await usuarioRepository.buscar_usuario_por_email(usuario.email)
+            usuario_encontrado = await postagemRepository.buscar_usuario_por_email(usuario.email)
 
             if usuario_encontrado:
                 return {
@@ -18,7 +18,7 @@ class UsuarioService:
                     "status": 400
                 }
             else:
-                novo_usuario = await usuarioRepository.criar_usuario(usuario)
+                novo_usuario = await postagemRepository.criar_usuario(usuario)
 
                 try:
                     url_foto = awsProvider.upload_arquivo_s3(
@@ -29,7 +29,7 @@ class UsuarioService:
                     print(f'Erro do registrar usuario --> UserService Registrar Usuario: {erro}')
 
 
-                novo_usuario = await usuarioRepository.atualizar_usuario(novo_usuario['id'], {"foto": url_foto})
+                novo_usuario = await postagemRepository.atualizar_usuario(novo_usuario['id'], {"foto": url_foto})
 
                 return {
                     "mensagem": "Usuario cadastrado com sucesso!",

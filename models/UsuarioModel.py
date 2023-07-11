@@ -73,7 +73,8 @@ class UsuarioAtualizarModel(BaseModel):
             "usuario": {
                 "nome": "Exemplo De Nome",
                 "email": "SeuEmail@Aqui.com",
-                "senha": "SuaSenha123"
+                "senha": "SuaSenha123",
+                "foto": "foto.png"
 
             }
         }

@@ -43,7 +43,7 @@ class UsuarioRepository:
             return converterUtils.usuario_converter(usuario)
 
     async def atualizar_usuario(self, id: str, dados_usuario: dict):
-        if dados_usuario["senha"] is not None:
+        if "senha" in dados_usuario:
             dados_usuario["senha"] = gerar_senha_criptografada(dados_usuario["senha"])
             print(dados_usuario)
 

@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-from fastapi import APIRouter, HTTPException, Depends, Header, UploadFile, Body
+from fastapi import APIRouter, HTTPException, Depends, Header, UploadFile
 from models.UsuarioModel import UsuarioCriarModel, UsuarioAtualizarModel
 from services.AuthService import decode_token_jwt
 from services.UsuarioService import UsuarioService
@@ -19,7 +19,7 @@ async def rota_criar_usuario(file: UploadFile, usuario: UsuarioCriarModel = Depe
 
         resultado = await usuarioService.registrar_usuario(usuario, caminho_foto)
         print(resultado)
-        #os.remove(caminho_foto)
+        os.remove(caminho_foto)
 
         if not resultado['status'] == 201:
             raise HTTPException(status_code=resultado['status'], detail=resultado['mensagem'])
@@ -27,8 +27,7 @@ async def rota_criar_usuario(file: UploadFile, usuario: UsuarioCriarModel = Depe
         return resultado
     except Exception as erro:
         print(f'Erro do rota_criar_usuario -----> UsuarioRoute : {erro}')
-        return erro
-        #raise HTTPException(status_code=500, detail="Erro interno no servidor.")
+        raise HTTPException(status_code=500, detail="Erro interno no servidor. Rota POST Criar Usuario")
 
 
 @router.get(
@@ -52,13 +51,17 @@ async def buscar_infor_usuario_logado(Authorization: str = Header(default='')):
         raise HTTPException(status_code=500, detail="Erro interno no servidor.")
 
 
-@router.put("/me", response_description="Rota PUT para Atualizar as informações do usuario logado."
+@router.put(
+    "/me",
+    response_description="Rota PUT para Atualizar as informações do usuario logado.",
+    dependencies=[Depends(verificar_token_jwt)]
     )
 async def atualizar_usuario_logado(Authorization: str = Header(default=''),
-                                   usuario_atualizar: UsuarioAtualizarModel = Body(...)):
+                                   usuario_atualizar: UsuarioAtualizarModel = Depends(UsuarioAtualizarModel)):
     try:
         token = Authorization.split(' ')[1]
         payload = decode_token_jwt(token)
+        print(payload)
 
         resultado = await usuarioService.atualizar_usuario_logado(payload["usuario_id"], usuario_atualizar)
         print(resultado)
@@ -69,4 +72,4 @@ async def atualizar_usuario_logado(Authorization: str = Header(default=''),
 
     except Exception as erro:
         print(f'Erro atualizar usuario --> Usuario Route: {erro}')
-        raise HTTPException(status_code=500, detail="Erro interno no servidor.")
+        raise HTTPException(status_code=500, detail="Erro interno no servidor. Rota PUT Atualizar Usuario")

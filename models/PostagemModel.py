@@ -1,4 +1,6 @@
 from typing import List
+
+from fastapi import UploadFile
 from pydantic import BaseModel, Field
 from models.ComentarioModel import ComentarioModel
 from models.UsuarioModel import UsuarioModel
@@ -28,14 +30,12 @@ class PostagemModel(BaseModel):
 
 
 class PostagemCriarModel(BaseModel):
-    usuario: UsuarioModel = Field(...)
-    foto: str = Field(...)
+    foto: UploadFile = Field(...)
     legenda: str = Field(...)
 
     class Config:
         schema_extra = {
             "Postagem": {
-                "usuario": "UsuarioModel",
                 "foto": "string",
                 "legenda": "string"
             }
